@@ -2,13 +2,14 @@
 #include <stdlib.h>
 
 void newGame();
-void game();
+void game(const p);
 void exitGame();
 void saveGame();
 void loadGame();
 
 void main()
 {
+	//menu
 	int option;
 	printf("1 Start New Game\t2 Load Previous Game\t3 Exit Program\n");
 	printf("\nPlease enter a number for option: ");
@@ -28,6 +29,11 @@ void main()
 }
 void newGame()
 {
+	/*
+	*newGame function asks for number of players and then calls game function
+	*players passed to game as parameter
+	*/
+
 	//make sure that the player enters the correct number of players
 	int players = 0;
 	while (players < 2 || players > 10)
@@ -44,19 +50,24 @@ void newGame()
 }
 void game(const p)
 {
+	/*
+	*Game function holds game logic
+	*/
+
 	//declare variables
 	const players = p;
-	int cnt = 0, i = 0, j = 0, round = 0, cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0;
+	int cnt = 0, round = 0, cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0;
 	int deck[] = { 14,13,12,11,10,9,8,7,6,5,4,3,2 };
 	//initialize hand for each player
 	int playerHand[10][10];
 	int playerPoints[10];
-
+	//get hand for each player
 	for (int i = 0; i < players; i++)
 	{
 		printf("\nPlayer %d Hand: ", i + 1);
 		for (int j = 0; j < 10; j++)
 		{
+			//random deck generates random numbers
 			int random = rand() % 13;
 			playerHand[i][j] = deck[random];
 			if (playerHand[i][j] < 11)
@@ -80,11 +91,21 @@ void game(const p)
 		}
 		printf("\nPlease choose a card from deck: ");
 		scanf("%d", &cardPlayed);
-		for (int cnt = 0; cnt < 10; cnt++)
+		cardInDeck = 0;
+		do
 		{
-			if (cardPlayed != playerHand[i][cnt] && cnt == 10)
+			for (int cnt = 0; cnt < 10; cnt++)
 			{
-				printf("\nCard not in hand!");
+				if (playerHand[i][cnt] == cardPlayed)
+				{
+					cardInDeck = 1;
+					printf("\nIN DECK");
+					break;
+				}
+			}
+			if (cardInDeck != 1)
+			{
+				printf("\nCard not in deck\n");
 				printf("\nPlease choose a card from deck: ");
 				scanf("%d", &cardPlayed);
 			}
@@ -92,8 +113,8 @@ void game(const p)
 			{
 				break;
 			}
-		}
-		printf("Card played: %d", cardPlayed);
+		} while (cardInDeck != 1);
+ 
 		if (cardPlayed > highestCard)
 		{
 			highestCard = cardPlayed;

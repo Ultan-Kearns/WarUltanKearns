@@ -61,66 +61,105 @@ void game(const p)
 	//initialize hand for each player
 	int playerHand[10][10];
 	int playerPoints[10];
-	//get hand for each player
-	for (int i = 0; i < players; i++)
+	//set player points to zero
+	for (int i = 0; i < 10; i++)
 	{
-		printf("\nPlayer %d Hand: ", i + 1);
-		for (int j = 0; j < 10; j++)
+		playerPoints[i] = 0;
+	}
+	//begin round
+	for (int i = 0; i < 5; i++)
+	{
+		int tie = 0;
+		highestCard = 0;
+		for (int j = 0; j < players; ++j)
 		{
-			//random deck generates random numbers
-			int random = rand() % 13;
-			playerHand[i][j] = deck[random];
-			if (playerHand[i][j] < 11)
-				printf("%3d", playerHand[i][j]);
-			else if (playerHand[i][j] == 11)
+			printf("\nPlayer %d Hand: ", j + 1);
+			for (int k = 0; k < 10; k++)
 			{
-				printf("%3c", 'J');
-			}
-			else if (playerHand[i][j] == 12)
-			{
-				printf("%3c", 'Q');
-			}
-			else if (playerHand[i][j] == 13)
-			{
-				printf("%3c", 'K');
-			}
-			else if (playerHand[i][j] == 14)
-			{
-				printf("%3c", 'A');
-			}
-		}
-		printf("\nPlease choose a card from deck: ");
-		scanf("%d", &cardPlayed);
-		cardInDeck = 0;
-		do
-		{
-			for (int cnt = 0; cnt < 10; cnt++)
-			{
-				if (playerHand[i][cnt] == cardPlayed)
+				//random deck generates random numbers
+				int random = rand() % 13;
+				playerHand[j][k] = 5;
+				if (playerHand[j][k] < 11)
 				{
-					cardInDeck = 1;
-					printf("\nIN DECK");
-					break;
+					printf("%3d", playerHand[j][k]);
+				}
+				else if (playerHand[j][k] == 11)
+				{
+					printf("%3c", 'J');
+				}
+				else if (playerHand[j][k] == 12)
+				{
+					printf("%3c", 'Q');
+				}
+				else if (playerHand[j][k] == 13)
+				{
+					printf("%3c", 'K');
+				}
+				else if (playerHand[j][k] == 14)
+				{
+					printf("%3c", 'A');
 				}
 			}
-			if (cardInDeck != 1)
+			printf("\nPlease choose a card from deck: ");
+			scanf("%d", &cardPlayed);
+			cardInDeck = 0;
+			do
 			{
-				printf("\nCard not in deck\n");
-				printf("\nPlease choose a card from deck: ");
-				scanf("%d", &cardPlayed);
-			}
-			else
+				for (int cnt = 0; cnt < 10; cnt++)
+				{
+					if (playerHand[j][cnt] == cardPlayed)
+					{
+						cardInDeck = 1;
+						break;
+					}
+				}
+				if (cardInDeck != 1)
+				{
+					printf("\nCard not in deck\n");
+					printf("\nPlease choose a card from deck: ");
+					scanf("%d", &cardPlayed);
+				}
+				else
+				{
+					break;
+				}
+			} while (cardInDeck != 1);
+			points += cardPlayed;
+			if (cardPlayed > highestCard)
 			{
-				break;
+				highestCard = cardPlayed;
+				winningPlayer = j;
 			}
-		} while (cardInDeck != 1);
- 
-		if (cardPlayed > highestCard)
+			else if (cardPlayed == highestCard)
+			{
+				highestCard = 0;
+			}
+			else if (highestCard == 0 && j == players - 1)
+			{
+				printf("IN");
+				tie = 1;
+			}
+			printf("VALUE: %d", j);
+		}
+		if (tie != 1)
 		{
-			highestCard = cardPlayed;
+			playerPoints[winningPlayer] += points;
+			printf("\nWinning player this round: %d\n With score this round of: %d\n", winningPlayer + 1, points);
+			points = 0;
+		}
+		else
+		{
+			printf("\nRound tied points in next round: %d\n");
+		}
+	}
+	for (int i = 0; i < players; i++)
+	{
+		if (playerPoints[i] > playerPoints[i + 1])
+		{
 			winningPlayer = i;
 		}
 	}
+	printf("\nWinner of game player:%d with a score of: %d\n", winningPlayer + 1, playerPoints[winningPlayer]);
 }
 void saveGame()
 {

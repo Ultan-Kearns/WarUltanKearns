@@ -56,7 +56,7 @@ void game(const p)
 
 	//declare variables
 	const players = p;
-	int cnt = 0, round = 0, cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0;
+	int round = 0, cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0, lastHighest = 0;
 	int deck[] = { 14,13,12,11,10,9,8,7,6,5,4,3,2 };
 	//initialize hand for each player
 	int playerHand[10][10];
@@ -67,18 +67,19 @@ void game(const p)
 		playerPoints[i] = 0;
 	}
 	//begin round
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 13; i++)
 	{
 		int tie = 0;
 		highestCard = 0;
+		lastHighest = 0;
 		for (int j = 0; j < players; ++j)
 		{
 			printf("\nPlayer %d Hand: ", j + 1);
-			for (int k = 0; k < 10; k++)
+			for (int k = 0; k < 13; k++)
 			{
 				//random deck generates random numbers
 				int random = rand() % 13;
-				playerHand[j][k] = 5;
+				playerHand[j][k] = deck[k];
 				if (playerHand[j][k] < 11)
 				{
 					printf("%3d", playerHand[j][k]);
@@ -105,7 +106,7 @@ void game(const p)
 			cardInDeck = 0;
 			do
 			{
-				for (int cnt = 0; cnt < 10; cnt++)
+				for (int cnt = 0; cnt < 13; cnt++)
 				{
 					if (playerHand[j][cnt] == cardPlayed)
 					{
@@ -125,31 +126,27 @@ void game(const p)
 				}
 			} while (cardInDeck != 1);
 			points += cardPlayed;
-			if (cardPlayed > highestCard)
+			if (cardPlayed > highestCard && cardPlayed != lastHighest)
 			{
 				highestCard = cardPlayed;
 				winningPlayer = j;
 			}
-			else if (cardPlayed == highestCard)
+			else if (cardPlayed == highestCard || cardPlayed == lastHighest)
 			{
+				lastHighest = highestCard;
+				tie = 1;
 				highestCard = 0;
 			}
-			else if (highestCard == 0 && j == players - 1)
-			{
-				printf("IN");
-				tie = 1;
-			}
-			printf("VALUE: %d", j);
 		}
 		if (tie != 1)
 		{
 			playerPoints[winningPlayer] += points;
-			printf("\nWinning player this round: %d\n With score this round of: %d\n", winningPlayer + 1, points);
+			printf("\nWinning player this round: %d\nWith score this round of: %d\n", winningPlayer + 1, points);
 			points = 0;
 		}
 		else
 		{
-			printf("\nRound tied points in next round: %d\n");
+			printf("\nRound tied points in next round: %d\n",points);
 		}
 	}
 	for (int i = 0; i < players; i++)

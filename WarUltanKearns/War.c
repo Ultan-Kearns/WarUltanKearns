@@ -126,10 +126,11 @@ void game(const p)
 				}
 			} while (cardInDeck != 1);
 			points += cardPlayed;
-			if (cardPlayed > highestCard && cardPlayed != lastHighest)
+			if (cardPlayed > highestCard)
 			{
 				highestCard = cardPlayed;
 				winningPlayer = j;
+				tie = 0;
 			}
 			else if (cardPlayed == highestCard || cardPlayed == lastHighest)
 			{

@@ -6,7 +6,11 @@ void game(const p);
 void exitGame();
 void saveGame(const p);
 void loadGame();
+
+//global variables
 int playerPoints[10];
+int gameStarted = 0;
+int players = 0;
 
 void main()
 {
@@ -39,7 +43,6 @@ void newGame()
 	*/
 
 	//make sure that the player enters the correct number of players
-	int players = 0;
 	while (players < 2 || players > 10)
 	{
 		printf("\nPlease enter number of players: ");
@@ -74,6 +77,7 @@ void game(const p)
 	{
 		int tie = 0;
 		highestCard = 0;
+		gameStarted = 1;
 		for (int j = 0; j < players; j++)
 		{
 			printf("\nPlayer %d Hand: ", j + 1);
@@ -158,7 +162,16 @@ void game(const p)
 			winningPlayer = i;
 		}
 	}
-	printf("\nWinner of game player:%d with a score of: %d\n", winningPlayer + 1, playerPoints[winningPlayer]);
+	if (playerPoints[winningPlayer] > 0)
+	{
+		printf("\nWinner of game player:%d with a score of: %d\n\n", winningPlayer + 1, playerPoints[winningPlayer]);
+	}
+	else
+	{
+		printf("\nGame tied\n\n");
+	}
+	gameStarted = 0;
+	main();
 }
 void saveGame(p,playerPoint)
 {
@@ -172,7 +185,18 @@ void saveGame(p,playerPoint)
 }
 void exitGame()
 {
-	printf("Are you sure you don't want to save? ");
+	char response;
+	printf("\nAre you sure you don't want to save?: ");
+	scanf("%c", &response);
+	if ('y' || 'Y' && gameStarted == 1)
+	{
+		saveGame(players,playerPoints);
+	}
+	else if ('N' || 'n')
+	{
+		printf("\nGame not started exiting");
+		return 0;
+	}
 	return 0;
 }
 void loadGame()

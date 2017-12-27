@@ -4,7 +4,7 @@
 void newGame();
 void game(const p);
 void exitGame();
-void saveGame();
+void saveGame(const p);
 void loadGame();
 
 void main()
@@ -56,29 +56,29 @@ void game(const p)
 
 	//declare variables
 	const players = p;
-	int round = 0, cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0, lastHighest = 0;
+	int cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0;
 	int deck[] = { 14,13,12,11,10,9,8,7,6,5,4,3,2 };
 	//initialize hand for each player
 	int playerHand[10][10];
 	int playerPoints[10];
+	int cardsInPlay[10];
 	//set player points to zero
 	for (int i = 0; i < 10; i++)
 	{
 		playerPoints[i] = 0;
+		cardsInPlay[i] = 0;
 	}
 	//begin round
 	for (int i = 0; i < 13; i++)
 	{
 		int tie = 0;
 		highestCard = 0;
-		lastHighest = 0;
-		for (int j = 0; j < players; ++j)
+		for (int j = 0; j < players; j++)
 		{
 			printf("\nPlayer %d Hand: ", j + 1);
 			for (int k = 0; k < 13; k++)
 			{
-				//random deck generates random numbers
-				int random = rand() % 13;
+				saveGame(p);
 				playerHand[j][k] = deck[k];
 				if (playerHand[j][k] < 11)
 				{
@@ -132,12 +132,11 @@ void game(const p)
 				winningPlayer = j;
 				tie = 0;
 			}
-			else if (cardPlayed == highestCard || cardPlayed == lastHighest)
+			else if (cardPlayed == highestCard)
 			{
-				lastHighest = highestCard;
 				tie = 1;
-				highestCard = 0;
 			}
+ 
 		}
 		if (tie != 1)
 		{
@@ -159,9 +158,16 @@ void game(const p)
 	}
 	printf("\nWinner of game player:%d with a score of: %d\n", winningPlayer + 1, playerPoints[winningPlayer]);
 }
-void saveGame()
+//need to print out player num and score
+void saveGame(p)
 {
-	FILE* fptr;
+	int players = p;
+	FILE* fptr = fopen("Saves.dat","w");
+	for (int i = 0; i < players; i++)
+	{
+		fprintf(fptr,"%d\n",players);
+	}
+	fclose(fptr);
 }
 void exitGame()
 {

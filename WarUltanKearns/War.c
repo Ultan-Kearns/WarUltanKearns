@@ -6,6 +6,7 @@ void game(const p);
 void exitGame();
 void saveGame(const p);
 void loadGame();
+int playerPoints[10];
 
 void main()
 {
@@ -14,17 +15,20 @@ void main()
 	printf("1 Start New Game\t2 Load Previous Game\t3 Exit Program\n");
 	printf("\nPlease enter a number for option: ");
 	scanf("%d", &option);
-	if (option == 1)
+	switch (option)
 	{
-		newGame();
-	}
-	else if (option == 2)
-	{
-		loadGame();
-	}
-	else if (option == 3)
-	{
-		exitGame();
+	case 1:
+			newGame();
+			break;
+	case 2:
+			loadGame();
+			break;
+	case 3:
+			exitGame();
+			break;
+	default:
+		printf("\nNot an option\n");
+		main();
 	}
 }
 void newGame()
@@ -57,16 +61,13 @@ void game(const p)
 	//declare variables
 	const players = p;
 	int cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0;
-	int deck[] = { 14,13,12,11,10,9,8,7,6,5,4,3,2 };
+	int deck[] = {14,13,12,11,10,9,8,7,6,5,4,3,2 };
 	//initialize hand for each player
 	int playerHand[10][10];
-	int playerPoints[10];
-	int cardsInPlay[10];
 	//set player points to zero
 	for (int i = 0; i < 10; i++)
 	{
 		playerPoints[i] = 0;
-		cardsInPlay[i] = 0;
 	}
 	//begin round
 	for (int i = 0; i < 13; i++)
@@ -101,6 +102,7 @@ void game(const p)
 					printf("%3c", 'A');
 				}
 			}
+			//fix input incase character inserted
 			printf("\nPlease choose a card from deck: ");
 			scanf("%d", &cardPlayed);
 			cardInDeck = 0;
@@ -158,14 +160,13 @@ void game(const p)
 	}
 	printf("\nWinner of game player:%d with a score of: %d\n", winningPlayer + 1, playerPoints[winningPlayer]);
 }
-//need to print out player num and score
-void saveGame(p)
+void saveGame(p,playerPoint)
 {
 	int players = p;
 	FILE* fptr = fopen("Saves.dat","w");
 	for (int i = 0; i < players; i++)
 	{
-		fprintf(fptr,"%d\n",players);
+		fprintf(fptr,"%d  %d\n",i + 1,playerPoints[i]);
 	}
 	fclose(fptr);
 }

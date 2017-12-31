@@ -3,7 +3,7 @@
 
 void newGame();
 void game(const p);
-void exitGame();
+int exitGame();
 void saveGame(const p);
 void loadGame();
 
@@ -64,8 +64,9 @@ void game(const p, int round)
 	//declare variables
 	const players = p;
 	int cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0;
-	int deck[] = {14,13,12,11,10,9,8,7,6,5,4,3,2 };
+	int deck[] = {14,13,12,11,10,9,8,7,6,5,4,3,2};
 	int rounds = round;
+	int cardsPlayed[10];
 	//initialize hand for each player
 	int playerHand[10][10];
 	//set player points to zero
@@ -82,13 +83,19 @@ void game(const p, int round)
 
 		int tie = 0;
 		highestCard = 0;
+		//Cards Played = 0
+		for (int cnt = 0; cnt < 10; cnt++)
+		{
+			cardsPlayed[i] = 0;
+		}
 		//players
 		for (int j = 0; j < players; j++)
 		{
 			printf("\nPlayer %d Hand: ", j + 1);
 			for (int k = 0; k < 13; k++)
 			{
-				playerHand[j][k] = deck[k];
+				int random = rand() % 13;
+				playerHand[j][k] = deck[random];
 				if (playerHand[j][k] < 11)
 				{
 					printf("%3d", playerHand[j][k]);
@@ -135,18 +142,21 @@ void game(const p, int round)
 					break;
 				}
 			} while (cardInDeck != 1);
+			cardsPlayed[j] = cardPlayed;
 			points += cardPlayed;
-			if (cardPlayed > highestCard)
+			for (int cnt = 0; cnt < 10; cnt++)
 			{
-				highestCard = cardPlayed;
-				winningPlayer = j;
-				tie = 0;
+				if (cardsPlayed[cnt] > highestCard)
+				{
+					highestCard = cardPlayed;
+					winningPlayer = j;
+					tie = 0;
+				}
+				else if (cardsPlayed[cnt] == highestCard)
+				{
+					tie = 1;
+				}
 			}
-			else if (cardPlayed == highestCard)
-			{
-				tie = 1;
-			}
- 
 		}
 		if (tie != 1)
 		{
@@ -190,6 +200,7 @@ void game(const p, int round)
 	}
 	main();
 }
+//may include points from tied games
 void saveGame(p,round)
 {
 	int players = p;
@@ -201,8 +212,9 @@ void saveGame(p,round)
 		fprintf(fptr,"%d\n",playerPoints[i]);
 	}
 	fclose(fptr);
+	printf("\nGame Saved\n");
 }
-void exitGame()
+int exitGame()
 {
 	return 0;
 }
@@ -215,16 +227,41 @@ void loadGame()
 		printf("No records starting new game");
 		newGame();
 	}
-	int i = 0;
+	int i = 0, roundNo, response;
 	int prevPlayerPoints[10];
-	int roundNo;
 	fscanf(fptr, "%d", &roundNo);
 	while (!feof(fptr))
 	{
 		fscanf(fptr,"\n%d",&prevPlayerPoints[i]); 
 		playerPoints[i] = prevPlayerPoints[i];
+		printf("\nPlayer: %d, Points %d", i + 1, prevPlayerPoints[i]);
 		i++;
 	}
-	game(i - 1,roundNo);
+	printf("\nPlease enter option below\n");
+	printf("\n1.Start New Round\t2.Save Game\t3.Exit Game\n4.Output Game Status\n");
+	scanf("%d", &response);
+	switch(response)
+	{
+		case 1:
+			game(i - 1, roundNo);
+			break;
+		case 2:
+			saveGame(i - 1, roundNo);
+			loadGame();
+			break;
+		case 3:
+			exitGame();
+			break;
+		case 4:
+			for (int cnt = 0; cnt < i; cnt++)
+			{
+				printf("\nPlayer: %d, Points %d\n", cnt + 1, prevPlayerPoints[cnt]);
+			}
+			loadGame();
+			break;
+		default:
+			printf("\nInvalid type\n");
+			loadGame();
+	}
 	fclose(fptr);
 }

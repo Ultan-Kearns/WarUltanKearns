@@ -79,11 +79,11 @@ void game(int p, int round,int tiedP)
 			playerPoints[i] = 0;
 		}
 	}
-	
+	//randomize seed
+	srand(time(NULL));
 	//rounds
 	for (int i = rounds; i < 13; i++)
 	{
-
 		int tie = 0;
 		highestCard = 0;
 		//Cards Played = 0
@@ -121,7 +121,7 @@ void game(int p, int round,int tiedP)
 				}
 			}
 			//fix input incase character inserted
-			printf("\nPlease choose a card from deck: ");
+			printf("\nEnter 14 for A, 13 for K, 12 for Q, 11 for J\nPlease choose a card from deck: ");
 			scanf("%d", &cardPlayed);
 			cardInDeck = 0;
 			do
@@ -152,14 +152,13 @@ void game(int p, int round,int tiedP)
 				highestCard = cardPlayed;
 				winningPlayer = j;
 				tie = 0;
-			}		
-			//Tie not working  count function is wrong what if cnt is 10 which is ! less than play
+			}
 		}
 		for (int cnt = 0; cnt < players; cnt++)
 		{
-			if (cardsPlayed[cnt] == cardsPlayed[cnt + 1])
+			for (int cnt1 = 0; cnt1 < players; cnt1++)
 			{
-				tie = 1;
+
 			}
 		}
 		if (tie != 1)

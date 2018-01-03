@@ -10,7 +10,7 @@ void loadGame();
 //global variables
 int playerPoints[10];
 int player = 0;
-int load = 0;
+int newGameStarted = 0;
 
 void main()
 {
@@ -53,9 +53,10 @@ void newGame()
 			printf("Number of players must be between 2 & 10\n");
 		}
 	}
-	game(player,0);
+	newGameStarted = 1;
+	game(player,0,0);
 }
-void game(const p, int round)
+void game(const p, int round,int tiedP)
 {
 	/*
 	*Game function holds game logic
@@ -63,20 +64,22 @@ void game(const p, int round)
 
 	//declare variables
 	const players = p;
-	int cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0;
+	int cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0, tiedPoints = tiedP;
 	int deck[] = {14,13,12,11,10,9,8,7,6,5,4,3,2};
 	int rounds = round;
 	int cardsPlayed[10];
 	//initialize hand for each player
 	int playerHand[10][10];
 	//set player points to zero
-	if (load != 1)
+	points += tiedPoints;
+	if (newGameStarted != 1)
 	{
 		for (int i = 0; i < 10; i++)
 		{
 			playerPoints[i] = 0;
 		}
 	}
+	
 	//rounds
 	for (int i = rounds; i < 13; i++)
 	{
@@ -154,20 +157,9 @@ void game(const p, int round)
 		}
 		for (int cnt = 0; cnt < players; cnt++)
 		{
-			//count down instead of up here
-			for (int cnt1 = cnt; cnt1 > 0; cnt1--)
+			if (cardsPlayed[cnt] == cardsPlayed[cnt + 1])
 			{
-				if (cardsPlayed[cnt] == highestCard && cnt != winningPlayer)
-				{
-					tie = 1;
-					highestCard = 0;
-				}
-				else if (cardsPlayed[cnt] > highestCard)
-				{
-					tie = 0;
-					highestCard = cardsPlayed[cnt];
-					winningPlayer = cnt;
-				}
+				tie = 1;
 			}
 		}
 		if (tie != 1)
@@ -178,7 +170,8 @@ void game(const p, int round)
 		}
 		else
 		{
-			printf("\nRound tied points in next round: %d\n",points);
+			printf("\nRound tied, points in next round: %d\n",points);
+			tiedPoints += points;
 		}
 		char response;
 		printf("Would you like to save y/n? ");
@@ -186,7 +179,7 @@ void game(const p, int round)
 		switch (response)
 		{
 		case 'y' | 'Y':
-			saveGame(players, i);
+			saveGame(players, i,tiedPoints);
 			exitGame();
 			break;
 		case 'N' | 'n':
@@ -213,18 +206,20 @@ void game(const p, int round)
 	main();
 }
 //may include points from tied games
-void saveGame(p,round)
+void saveGame(p,round,pointsTied)
 {
 	int players = p;
 	int roundPlayed = round;
-	FILE* fptr = fopen("Saves.dat","w");
-	fprintf(fptr,"%d\n", player);
-	fprintf(fptr,"%d\n", roundPlayed);
+	int tiedPoints = 0;
+	FILE* fptrSave = fopen("Saves.dat","w");
+	fprintf(fptrSave,"%d\n", player);
+	fprintf(fptrSave,"%d\n", roundPlayed);
+	fprintf(fptrSave,"%d\n", tiedPoints);
 	for (int i = 0; i < players; i++)
 	{
-		fprintf(fptr,"%d\n",playerPoints[i]);
+		fprintf(fptrSave,"%d\n",playerPoints[i]);
 	}
-	fclose(fptr);
+	fclose(fptrSave);
 	printf("\nGame Saved\n");
 }
 int exitGame()
@@ -233,43 +228,47 @@ int exitGame()
 }
 void loadGame()
 {
-	load = 1;
 	FILE* fptr = fopen("Saves.dat", "r");
 	if (fptr == NULL)
 	{
+		fclose(fptr);
 		printf("No records starting new game");
 		newGame();
 	}
-	int i = 0, roundNo, response;
+	int i = 0, roundNo, response, player,tiedPoints = 0;
 	int prevPlayerPoints[10];
-	int player = fscanf(fptr, "%d", &player);
-	fscanf(fptr, "%d", &roundNo);
+	fscanf(fptr, "%d\n", &player);
+	fscanf(fptr, "%d\n", &roundNo);
+	fscanf(fptr, "%d\n", &tiedPoints);
 	do
 	{
 		fscanf(fptr,"\n%d",&prevPlayerPoints[i]); 
 		playerPoints[i] = prevPlayerPoints[i];
 		printf("\nPlayer: %d, Points %d", i + 1, prevPlayerPoints[i]);
 		i++;
-	} while (i < player + 1);
+	} while (i < player);
+	fclose(fptr);
+	printf("\nCurrent tie points: %d",tiedPoints);
 	printf("\nPlease enter option below\n");
 	printf("\n1.Start New Round\t2.Save Game\t3.Output game status\n4.Exit game without saving\n");
 	scanf("%d", &response);
 	switch(response)
 	{
 		case 1:
-			game(i - 1, roundNo);
+			game(player, roundNo,tiedPoints);
 			break;
 		case 2:
-			saveGame(i - 1, roundNo);
-			loadGame();
+			saveGame(player, roundNo,tiedPoints);
+			main();
 			break;
 		case 3:
 			printf("Game Status");
-			for (int cnt = 0; cnt < player + 1; cnt++)
+			for (int cnt = 0; cnt < player; cnt++)
 			{
 				printf("\nPlayer: %d\n Points %d\n", cnt + 1, prevPlayerPoints[cnt]);		
 			}
-			printf("Round: %d\n\n",roundNo + 1);
+			printf("\nRound: %d",roundNo + 1);
+			printf("\nTied points:%d\n\n",tiedPoints);
 			loadGame();
 			break;
 		case 4:
@@ -279,5 +278,4 @@ void loadGame()
 			printf("\nInvalid type\n");
 			loadGame();
 	}
-	fclose(fptr);
 }

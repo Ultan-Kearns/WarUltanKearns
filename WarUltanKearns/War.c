@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 void newGame();
-void game(int p,int round,int tiedP);
+void game(p,round,tiedP);
 int exitGame();
-void saveGame(int p, int round, int pointsTied);
+void saveGame(p, round, pointsTied);
 void loadGame();
 
 //global variables
@@ -72,7 +72,7 @@ void game(int p, int round,int tiedP)
 	int playerHand[10][10];
 	//set player points to zero
 	points += tiedPoints;
-	if (newGameStarted != 1)
+	if (newGameStarted == 1)
 	{
 		for (int i = 0; i < 10; i++)
 		{
@@ -203,6 +203,7 @@ void game(int p, int round,int tiedP)
 	{
 		printf("\nGame tied\n\n");
 	}
+	newGameStarted = 0;
 	main();
 }
 //playerChosen resets to zero

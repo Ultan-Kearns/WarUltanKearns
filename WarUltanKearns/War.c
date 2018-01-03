@@ -2,15 +2,15 @@
 #include <stdlib.h>
 
 void newGame();
-void game(const p);
+void game(int p,int round,int tiedP);
 int exitGame();
-void saveGame(const p);
+void saveGame(int p, int round, int pointsTied);
 void loadGame();
 
 //global variables
 int playerPoints[10];
-int player = 0;
 int newGameStarted = 0;
+int playerChosen;
 
 void main()
 {
@@ -43,27 +43,27 @@ void newGame()
 	*/
 
 	//make sure that the player enters the correct number of players
-	while (player < 2 || player > 10)
+	while (playerChosen < 2 || playerChosen > 10)
 	{
 		printf("\nPlease enter number of players: ");
-		scanf("%d", &player);
+		scanf("%d", &playerChosen);
 		//inform if not the correct number
-		if (player < 2 || player > 10)
+		if (playerChosen < 2 || playerChosen > 10)
 		{
 			printf("Number of players must be between 2 & 10\n");
 		}
 	}
 	newGameStarted = 1;
-	game(player,0,0);
+	game(playerChosen,0,0);
 }
-void game(const p, int round,int tiedP)
+void game(int p, int round,int tiedP)
 {
 	/*
 	*Game function holds game logic
 	*/
 
 	//declare variables
-	const players = p;
+	int players = p;
 	int cardPlayed = 0, points = 0, highestCard = 0, winningPlayer = 0, cardInDeck = 0, tiedPoints = tiedP;
 	int deck[] = {14,13,12,11,10,9,8,7,6,5,4,3,2};
 	int rounds = round;
@@ -167,6 +167,7 @@ void game(const p, int round,int tiedP)
 			playerPoints[winningPlayer] += points;
 			printf("\nWinning player this round: %d\nWith score this round of: %d\n", winningPlayer + 1, points);
 			points = 0;
+			tiedPoints = 0;
 		}
 		else
 		{
@@ -180,7 +181,6 @@ void game(const p, int round,int tiedP)
 		{
 		case 'y' | 'Y':
 			saveGame(players, i,tiedPoints);
-			exitGame();
 			break;
 		case 'N' | 'n':
 			break;
@@ -205,27 +205,28 @@ void game(const p, int round,int tiedP)
 	}
 	main();
 }
-//may include points from tied games
+//playerChosen resets to zero
 void saveGame(p,round,pointsTied)
 {
 	int players = p;
 	int roundPlayed = round;
-	int tiedPoints = 0;
-	FILE* fptrSave = fopen("Saves.dat","w");
-	fprintf(fptrSave,"%d\n", player);
-	fprintf(fptrSave,"%d\n", roundPlayed);
-	fprintf(fptrSave,"%d\n", tiedPoints);
+	int tiedPoints = pointsTied;
+	FILE* fptr = fopen("Saves.dat","w");
+	fprintf(fptr,"%d\n", playerChosen);
+	fprintf(fptr,"%d\n", roundPlayed);
+	fprintf(fptr,"%d\n", tiedPoints);
 	for (int i = 0; i < players; i++)
 	{
-		fprintf(fptrSave,"%d\n",playerPoints[i]);
+		fprintf(fptr,"%d\n",playerPoints[i]);
 	}
-	fclose(fptrSave);
+	fclose(fptr);
 	printf("\nGame Saved\n");
 }
 int exitGame()
 {
 	return 0;
 }
+//cannot save from load or save new rounds
 void loadGame()
 {
 	FILE* fptr = fopen("Saves.dat", "r");
@@ -235,9 +236,10 @@ void loadGame()
 		printf("No records starting new game");
 		newGame();
 	}
-	int i = 0, roundNo, response, player,tiedPoints = 0;
+	int i = 0, roundNo, response, player,tiedPoints;
 	int prevPlayerPoints[10];
 	fscanf(fptr, "%d\n", &player);
+	playerChosen = player;
 	fscanf(fptr, "%d\n", &roundNo);
 	fscanf(fptr, "%d\n", &tiedPoints);
 	do
@@ -258,7 +260,7 @@ void loadGame()
 			game(player, roundNo,tiedPoints);
 			break;
 		case 2:
-			saveGame(player, roundNo,tiedPoints);
+			saveGame(player, roundNo, tiedPoints);
 			main();
 			break;
 		case 3:

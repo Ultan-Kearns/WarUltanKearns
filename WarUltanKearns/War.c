@@ -156,7 +156,8 @@ void game(int p, int round,int tiedP)
 		}
 		//use as boolean for detecting all numbers equal to cardsPlayed[cnt]
 		int equals = 0;
-		for (int cnt = 0; cnt < players + 1; cnt++)
+		//loop removes duplicates from array
+		for (int cnt = 0; cnt < players; cnt++)
 		{
 			equals = 0;
 			for (int cnt1 = players; cnt1 > 0; cnt1--)
@@ -172,16 +173,20 @@ void game(int p, int round,int tiedP)
 					}
 					equals = 1;
 				}
-				else if (cardsPlayed[cnt] > highestCard)
-				{
-					highestCard = cardsPlayed[cnt];
-					winningPlayer = cnt;
-					tie = 0;
-				}
 			}
 			if (equals == 1)
 			{
 				cardsPlayed[cnt] = 0;
+			}
+		}
+		//check for highest card
+		for (int cnt = 0; cnt < players; cnt++)
+		{
+			if (cardsPlayed[cnt] > highestCard)
+			{
+				highestCard = cardsPlayed[cnt];
+				winningPlayer = cnt;
+				tie = 0;
 			}
 		}
 		if (tie != 1)

@@ -154,11 +154,34 @@ void game(int p, int round,int tiedP)
 				tie = 0;
 			}
 		}
-		for (int cnt = 0; cnt < players; cnt++)
+		//use as boolean for detecting all numbers equal to cardsPlayed[cnt]
+		int equals = 0;
+		for (int cnt = 0; cnt < players + 1; cnt++)
 		{
-			for (int cnt1 = 0; cnt1 < players; cnt1++)
+			equals = 0;
+			for (int cnt1 = players; cnt1 > 0; cnt1--)
 			{
-
+				if (cardsPlayed[cnt] == cardsPlayed[cnt1] && cnt != cnt1)
+				{
+					//cards go to zero after first match
+					cardsPlayed[cnt1] = 0;
+					if (cardsPlayed[cnt] == highestCard)
+					{
+						highestCard = 0;
+						tie = 1;
+					}
+					equals = 1;
+				}
+				else if (cardsPlayed[cnt] > highestCard)
+				{
+					highestCard = cardsPlayed[cnt];
+					winningPlayer = cnt;
+					tie = 0;
+				}
+			}
+			if (equals == 1)
+			{
+				cardsPlayed[cnt] = 0;
 			}
 		}
 		if (tie != 1)
